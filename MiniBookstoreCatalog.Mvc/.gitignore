@@ -1,0 +1,77 @@
+# Build folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio files
+.vs/
+.vscode/
+
+# Rider / JetBrains
+.idea/
+
+# ASP.NET Core
+appsettings.Development.json
+
+# Logs
+*.log
+
+# NuGet
+*.nupkg
+packages/
+
+# Node modules (if frontend exists)
+node_modules/
+
+# wwwroot generated files
+wwwroot/lib/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Publish output
+publish/
+*.publishproj
+
+# Entity Framework
+Migrations/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# IIS Express
+iisexpress/
+
+# SQL Server
+*.mdf
+*.ldf
+
+# dotenv
+.env
+
+# JetBrains Rider
+.idea/
+
+# Backup files
+*.bak
+*.backup
+
+# Test results
+TestResults/
+
+# Coverage
+coverage/
+
+# Generated CSS/JS maps
+*.map
