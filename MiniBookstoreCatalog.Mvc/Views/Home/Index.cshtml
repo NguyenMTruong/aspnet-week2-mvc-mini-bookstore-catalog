@@ -1,8 +1,39 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="lab-hero">
+    <h1>Mini Bookstore Catalog MVC</h1>
+
+    <p>
+        Website này giúp quản lý danh mục sách
+        <br />
+        và theo dõi tình trạng tồn kho của cửa hàng sách.
+    </p>
+</div>
+
+<div class="info-panel">
+    <h4>Mục tiêu chính của hệ thống</h4>
+
+    <p>
+        Ứng dụng sử dụng ASP.NET Core MVC để quản lý sách,
+        hiển thị danh sách, chi tiết và thống kê tồn kho.
+    </p>
+</div>
+
+<h3>Chức năng chính của hệ thống</h3>
+
+<ol class="flow-list">
+    <li>1. Xem danh sách tất cả sách trong cửa hàng.</li>
+    <li>2. Xem chi tiết từng quyển sách.</li>
+    <li>3. Kiểm tra trạng thái tồn kho của sách.</li>
+    <li>4. Xem thống kê tổng quan kho sách.</li>
+    <li>5. Hỗ trợ JSON response và xử lý NotFound.</li>
+</ol>
+
+<div class="text-center mt-4">
+    <a class="btn btn-primary btn-lg" href="/Books">
+        <i class="bi bi-book"></i>
+        Đi đến Book Catalog
+    </a>
 </div>
