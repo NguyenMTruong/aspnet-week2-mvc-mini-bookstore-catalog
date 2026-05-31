@@ -1,0 +1,43 @@
+@model BookListItemViewModel
+
+<div class="book-card">
+    <h3>@Model.Title</h3>
+
+    <p class="book-meta">
+        Code: @Model.Code
+    </p>
+
+    <p class="book-meta">
+        Nhóm: @Model.Category
+    </p>
+
+    <p class="book-price">
+        @Model.PriceText
+    </p>
+
+    <p>
+        Số lượng: <strong>@Model.Quantity</strong>
+    </p>
+
+    @if (Model.StockStatus == "Còn hàng")
+    {
+        <span class="badge badge-success">@Model.StockStatus</span>
+    }
+    else if (Model.StockStatus == "Cần nhập thêm")
+    {
+        <span class="badge badge-warning">@Model.StockStatus</span>
+    }
+    else
+    {
+        <span class="badge badge-danger">@Model.StockStatus</span>
+    }
+
+    <div class="card-actions">
+        <a class="btn btn-light"
+           asp-controller="Books"
+           asp-action="Detail"
+           asp-route-id="@Model.Id">
+            Xem
+        </a>
+    </div>
+</div>

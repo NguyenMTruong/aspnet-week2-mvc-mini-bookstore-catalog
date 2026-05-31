@@ -91,4 +91,50 @@ public class BooksController : Controller
             LastUpdatedAt = book.LastUpdatedAt
         };
     }
+
+    [HttpGet]
+    public IActionResult Search(string? keyword, decimal? minPrice)
+    {
+        var products = _bookService.Search(keyword, minPrice)
+            .Select(ToListItemViewModel)
+            .ToList();
+
+        var viewModel = new BookSearchViewModel
+        {
+            Keyword = keyword ?? "",
+            MinPrice = minPrice,
+            Books = products
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        var viewModel = new BookCreateViewModel
+        {
+            Quantity = 1,
+            MinStock = 1
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Create(BookCreateViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        _bookService.Create(model);
+
+        TempData["SuccessMessage"] = "Đã thêm sản phẩm thành công.";
+
+        return RedirectToAction(nameof(Index));
+    }
+
 }

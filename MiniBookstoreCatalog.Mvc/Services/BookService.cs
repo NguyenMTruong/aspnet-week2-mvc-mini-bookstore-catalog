@@ -189,4 +189,49 @@ public class BookService
                 book.Quantity <= book.MinStock)
         };
     }
+
+    public List<Book> Search(string? keyword, decimal? minPrice)
+    {
+        var query = _books.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            query = query.Where(book =>
+                book.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                book.Category.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                book.Code.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (minPrice.HasValue)
+        {
+            query = query.Where(product => product.Price >= minPrice.Value);
+        }
+
+        return query.ToList();
+    }
+
+    public Book Create(BookCreateViewModel model)
+    {
+        var newId = _books.Count == 0
+            ? 1
+            : _books.Max(product => product.Id) + 1;
+
+        var book = new Book
+        {
+            Id = newId,
+            Code = $"NEW-{newId:000}",
+            Title = model.Title,
+            Category = model.Category,
+            Author = model.Author,
+            Price = model.Price,
+            Quantity = model.Quantity,
+            MinStock = model.MinStock,
+            LastUpdatedAt = DateTime.Now
+        };
+
+        _books.Add(book);
+
+        return book;
+    }
+
 }
