@@ -97,5 +97,19 @@ public class BooksController : Controller
 
         return View(books);
     }
+
+    public async Task<IActionResult> Filter(
+    int? categoryId,
+    decimal? minPrice,
+    decimal? maxPrice)
+    {
+        var result =
+            await _bookService.FilterAsync(
+                categoryId,
+                minPrice,
+                maxPrice);
+
+        return View(result);
+    }
 }
 

@@ -20,5 +20,9 @@ public interface IBookRepository
 
     Task SaveChangesAsync();
     
+    Task<List<Book>> FilterAsync(
+    int? categoryId,
+    decimal? minPrice,
+    decimal? maxPrice);
 }
 

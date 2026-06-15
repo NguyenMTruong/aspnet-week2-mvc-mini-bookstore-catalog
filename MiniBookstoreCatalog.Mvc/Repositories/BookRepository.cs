@@ -74,6 +74,30 @@ public class BookRepository : IBookRepository
     {
         await _context.SaveChangesAsync();
     }
-    
+
+    public async Task<List<Book>> FilterAsync(
+    int? categoryId,
+    decimal? minPrice,
+    decimal? maxPrice)
+    {
+        var query = _context.Books
+            .Include(x => x.Category)
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (categoryId.HasValue)
+            query = query.Where(x =>
+                x.CategoryId == categoryId);
+
+        if (minPrice.HasValue)
+            query = query.Where(x =>
+                x.Price >= minPrice);
+
+        if (maxPrice.HasValue)
+            query = query.Where(x =>
+                x.Price <= maxPrice);
+
+        return await query.ToListAsync();
+    }
 }
 
