@@ -89,5 +89,13 @@ public class BooksController : Controller
 
         return View(result);
     }
+
+    public async Task<IActionResult> LowStock()
+    {
+        var books =
+            await _bookService.GetLowStockBooksAsync();
+
+        return View(books);
+    }
 }
 

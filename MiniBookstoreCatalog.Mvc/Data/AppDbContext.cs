@@ -15,8 +15,6 @@ public class AppDbContext : DbContext
 
     public DbSet<Category> Categories => Set<Category>();
 
-    public DbSet<Customer> Customers => Set<Customer>();
-
     public DbSet<Order> Orders => Set<Order>();
 
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();

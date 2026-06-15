@@ -1,17 +1,22 @@
 using MiniBookstoreCatalog.Mvc.Models;
 using MiniBookstoreCatalog.Mvc.Repositories;
 using MiniBookstoreCatalog.Mvc.ViewModels;
+using Microsoft.Extensions.Options;
+using MiniBookstoreCatalog.Mvc.Options;
 
 namespace MiniBookstoreCatalog.Mvc.Services;
 
 public class BookService : IBookService
 {
     private readonly IBookRepository _repository;
+    private readonly AppSettings _settings;
 
     public BookService(
-        IBookRepository repository)
+        IBookRepository repository,
+        IOptions<AppSettings> options)
     {
         _repository = repository;
+        _settings = options.Value;
     }
 
     public async Task<List<BookListItemViewModel>>
@@ -127,6 +132,36 @@ public class BookService : IBookService
             CategoryName =
                 book.Category?.Name ?? ""
         };
+    }
+
+    public async Task<List<Book>> GetLowStockBooksAsync()
+    {
+        var books = await _repository.GetAllAsync();
+
+        return books
+            .Where(x => x.Stock <= _settings.LowAvailableCopyThreshold)
+            .ToList();
+    }
+
+    public async Task<List<BookListItemViewModel>> FilterAsync(
+        int? categoryId,
+        decimal? minPrice,
+        decimal? maxPrice)
+    {
+        var books =
+            await _repository.FilterAsync(
+                categoryId,
+                minPrice,
+                maxPrice);
+
+        return books.Select(x =>
+            new BookListItemViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Price = x.Price
+            })
+            .ToList();
     }
 }
 

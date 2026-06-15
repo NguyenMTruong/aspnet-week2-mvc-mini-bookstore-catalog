@@ -2,8 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using MiniBookstoreCatalog.Mvc.Data;
 using MiniBookstoreCatalog.Mvc.Services;
 using MiniBookstoreCatalog.Mvc.Repositories;
+using MiniBookstoreCatalog.Mvc.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<AppSettings>(
+    builder.Configuration.GetSection("AppSettings"));
 
 builder.Services.AddControllersWithViews();
 
