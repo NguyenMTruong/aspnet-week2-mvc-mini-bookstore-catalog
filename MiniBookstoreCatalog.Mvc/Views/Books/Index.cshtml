@@ -22,6 +22,7 @@
     <thead>
         <tr>
             <th>ISBN</th>
+            <th>Book Code</th>
             <th>Title</th>
             <th>Author</th>
             <th>Category</th>
@@ -32,10 +33,11 @@
     </thead>
 
     <tbody>
-    @foreach (var item in Model)
+    @foreach (BookListItemViewModel item in Model)
     {
         <tr>
             <td>@item.ISBN</td>
+            <td>@item.BookCode</td>
             <td>@item.Title</td>
             <td>@item.Author</td>
             <td>@item.CategoryName</td>

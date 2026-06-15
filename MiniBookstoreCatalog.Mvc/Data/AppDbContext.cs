@@ -68,6 +68,7 @@ public class AppDbContext : DbContext
             new Book
             {
                 Id = 1,
+                BookCode = "BK001",
                 ISBN = "9780132350884",
                 Title = "Clean Code",
                 Author = "Robert C. Martin",
@@ -80,6 +81,7 @@ public class AppDbContext : DbContext
             new Book
             {
                 Id = 2,
+                BookCode = "BK002",
                 ISBN = "9781617294532",
                 Title = "ASP.NET Core In Action",
                 Author = "Andrew Lock",
@@ -92,6 +94,7 @@ public class AppDbContext : DbContext
             new Book
             {
                 Id = 3,
+                BookCode = "BK003",
                 ISBN = "9781492057611",
                 Title = "Learning SQL",
                 Author = "Alan Beaulieu",

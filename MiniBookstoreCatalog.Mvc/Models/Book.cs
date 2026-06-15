@@ -1,10 +1,16 @@
 namespace MiniBookstoreCatalog.Mvc.Models;
 
+using System.ComponentModel.DataAnnotations;
+
 public class Book
 {
     public int Id { get; set; }
 
     public string ISBN { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(20)]
+    public string BookCode { get; set; } = "";
 
     public string Title { get; set; } = string.Empty;
 
