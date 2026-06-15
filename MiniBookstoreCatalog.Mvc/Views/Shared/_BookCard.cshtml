@@ -1,43 +1,29 @@
-@model BookListItemViewModel
+@model MiniBookstoreCatalog.Mvc.ViewModels.BookListItemViewModel
 
-<div class="book-card">
-    <h3>@Model.Title</h3>
+<div class="card mb-3">
 
-    <p class="book-meta">
-        Code: @Model.Code
-    </p>
+    <div class="card-body">
 
-    <p class="book-meta">
-        Nhóm: @Model.Category
-    </p>
+        <h5>@Model.Title</h5>
 
-    <p class="book-price">
-        @Model.PriceText
-    </p>
+        <p>
+            Author:
+            @Model.Author
+        </p>
 
-    <p>
-        Số lượng: <strong>@Model.Quantity</strong>
-    </p>
+        <p>
+            Price:
+            @Model.Price.ToString("N0")
+        </p>
 
-    @if (Model.StockStatus == "Còn hàng")
-    {
-        <span class="badge badge-success">@Model.StockStatus</span>
-    }
-    else if (Model.StockStatus == "Cần nhập thêm")
-    {
-        <span class="badge badge-warning">@Model.StockStatus</span>
-    }
-    else
-    {
-        <span class="badge badge-danger">@Model.StockStatus</span>
-    }
-
-    <div class="card-actions">
-        <a class="btn btn-light"
-           asp-controller="Books"
+        <a asp-controller="Books"
            asp-action="Detail"
-           asp-route-id="@Model.Id">
-            Xem
+           asp-route-id="@Model.Id"
+           class="btn btn-primary">
+            Detail
         </a>
+
     </div>
+
 </div>
+

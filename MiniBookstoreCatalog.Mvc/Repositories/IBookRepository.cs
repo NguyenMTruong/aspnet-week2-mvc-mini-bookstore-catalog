@@ -1,0 +1,23 @@
+using MiniBookstoreCatalog.Mvc.Models;
+
+namespace MiniBookstoreCatalog.Mvc.Repositories;
+
+public interface IBookRepository
+{
+    Task<List<Book>> GetAllAsync();
+
+    Task<List<Book>> GetAllReadOnlyAsync();
+
+    Task<Book?> GetByIdAsync(int id);
+
+    Task<List<Book>> SearchAsync(string keyword);
+
+    Task AddAsync(Book book);
+
+    Task UpdateAsync(Book book);
+
+    Task DeleteAsync(int id);
+
+    Task SaveChangesAsync();
+}
+

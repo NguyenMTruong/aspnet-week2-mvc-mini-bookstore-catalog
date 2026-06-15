@@ -4,12 +4,12 @@ namespace MiniBookstoreCatalog.Mvc.ViewModels;
 
 public class BookCreateViewModel
 {
+     [Required]
+    public string ISBN { get; set; } = "";
+
     [Required(ErrorMessage = "Tên sách không được để trống")]
     [StringLength(100, ErrorMessage = "Tên sách không được vượt quá 100 ký tự")]
     public string Title { get; set; } = "";
-
-    [Required(ErrorMessage = "Nhóm sách không được để trống")]
-    public string Category { get; set; } = "";
 
     [Required(ErrorMessage = "Tên tác giả không được để trống")]
     public string Author { get; set; } = "";
@@ -18,8 +18,12 @@ public class BookCreateViewModel
     public decimal Price { get; set; }
 
     [Range(0, 10000, ErrorMessage = "Số lượng phải từ 0 đến 10.000")]
-    public int Quantity { get; set; }
+    public int Stock { get; set; }
 
     [Range(0, 10000, ErrorMessage = "Mức tồn tối thiểu phải từ 0 đến 10.000")]
     public int MinStock { get; set; }
+
+    [Required]
+    public int CategoryId { get; set; }
 }
+

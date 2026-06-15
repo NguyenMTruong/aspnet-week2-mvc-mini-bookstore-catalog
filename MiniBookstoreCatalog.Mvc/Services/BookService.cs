@@ -1,133 +1,132 @@
 using MiniBookstoreCatalog.Mvc.Models;
+using MiniBookstoreCatalog.Mvc.Repositories;
 using MiniBookstoreCatalog.Mvc.ViewModels;
 
 namespace MiniBookstoreCatalog.Mvc.Services;
 
-public class BookService
+public class BookService : IBookService
 {
-    private readonly List<Book> _books = new()
+    private readonly IBookRepository _repository;
+
+    public BookService(
+        IBookRepository repository)
     {
-        new Book
-        {
-            Id = 1,
-            Code = "BK-001",
-            Title = "Clean Code",
-            Category = "Programming",
-            Author = "Robert C. Martin",
-            Price = 450000,
-            Quantity = 12,
-            MinStock = 5,
-            LastUpdatedAt = DateTime.Now
-        },
-
-        new Book
-        {
-            Id = 2,
-            Code = "BK-002",
-            Title = "ASP.NET Core MVC",
-            Category = "Technology",
-            Author = "Microsoft Press",
-            Price = 520000,
-            Quantity = 3,
-            MinStock = 5,
-            LastUpdatedAt = DateTime.Now
-        },
-
-        new Book
-        {
-            Id = 3,
-            Code = "BK-003",
-            Title = "Design Patterns",
-            Category = "Programming",
-            Author = "GoF",
-            Price = 600000,
-            Quantity = 0,
-            MinStock = 2,
-            LastUpdatedAt = DateTime.Now
-        },
-
-        new Book
-        {
-            Id = 4,
-            Code = "BK-004",
-            Title = "The Pragmatic Programmer",
-            Category = "Programming",
-            Author = "Andrew Hunt",
-            Price = 480000,
-            Quantity = 7,
-            MinStock = 3,
-            LastUpdatedAt = DateTime.Now
-        }
-    };
-
-    public List<Book> GetAll()
-    {
-        return _books;
+        _repository = repository;
     }
 
-    public Book? GetById(int id)
+    public async Task<List<BookListItemViewModel>>
+        GetAllAsync()
     {
-        return _books.FirstOrDefault(book => book.Id == id);
+        var books =
+            await _repository.GetAllReadOnlyAsync();
+
+        return books.Select(ToListItem)
+            .ToList();
     }
 
-    public BookStatsViewModel GetStats()
+    public async Task<BookDetailViewModel?>
+        GetByIdAsync(int id)
     {
-        return new BookStatsViewModel
-        {
-            TotalBooks = _books.Count,
-            TotalQuantity = _books.Sum(book => book.Quantity),
-            TotalInventoryValue = _books.Sum(book => book.Price * book.Quantity),
+        var book =
+            await _repository.GetByIdAsync(id);
 
-            OutOfStockCount = _books.Count(book => book.Quantity <= 0),
+        if (book == null)
+            return null;
 
-            NeedReorderCount = _books.Count(book =>
-                book.Quantity > 0 &&
-                book.Quantity <= book.MinStock)
-        };
+        return ToDetail(book);
     }
 
-    public List<Book> Search(string? keyword, decimal? minPrice)
+    public async Task<List<BookListItemViewModel>>
+        SearchAsync(string keyword)
     {
-        var query = _books.AsEnumerable();
+        var books =
+            await _repository.SearchAsync(keyword);
 
-        if (!string.IsNullOrWhiteSpace(keyword))
-        {
-            query = query.Where(book =>
-                book.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                book.Category.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                book.Code.Contains(keyword, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (minPrice.HasValue)
-        {
-            query = query.Where(product => product.Price >= minPrice.Value);
-        }
-
-        return query.ToList();
+        return books.Select(ToListItem)
+            .ToList();
     }
 
-    public Book Create(BookCreateViewModel model)
+    public async Task CreateAsync(
+        BookCreateViewModel model)
     {
-        var newId = _books.Count == 0
-            ? 1
-            : _books.Max(product => product.Id) + 1;
-
         var book = new Book
         {
-            Id = newId,
-            Code = $"NEW-{newId:000}",
+            ISBN = model.ISBN,
             Title = model.Title,
-            Category = model.Category,
             Author = model.Author,
             Price = model.Price,
-            Quantity = model.Quantity,
+            Stock = model.Stock,
             MinStock = model.MinStock,
+            CategoryId = model.CategoryId,
             LastUpdatedAt = DateTime.Now
         };
 
-        _books.Add(book);
+        await _repository.AddAsync(book);
 
-        return book;
+        await _repository.SaveChangesAsync();
     }
 
+    public async Task<BookStatsViewModel>
+        GetStatsAsync()
+    {
+        var books =
+            await _repository.GetAllReadOnlyAsync();
+
+        return new BookStatsViewModel
+        {
+            TotalBooks = books.Count,
+            TotalQuantity =
+                books.Sum(x => x.Stock),
+
+            TotalInventoryValue =
+                books.Sum(x =>
+                    x.Price * x.Stock),
+
+            OutOfStockCount =
+                books.Count(x =>
+                    x.Stock == 0),
+
+            NeedReorderCount =
+                books.Count(x =>
+                    x.Stock > 0 &&
+                    x.Stock <= x.MinStock)
+        };
+    }
+
+    private static BookListItemViewModel
+        ToListItem(Book book)
+    {
+        return new BookListItemViewModel
+        {
+            Id = book.Id,
+            ISBN = book.ISBN,
+            Title = book.Title,
+            Author = book.Author,
+            Price = book.Price,
+            Stock = book.Stock,
+            MinStock = book.MinStock,
+            CategoryName =
+                book.Category?.Name ?? ""
+        };
+    }
+
+    private static BookDetailViewModel
+        ToDetail(Book book)
+    {
+        return new BookDetailViewModel
+        {
+            Id = book.Id,
+            ISBN = book.ISBN,
+            Title = book.Title,
+            Author = book.Author,
+            Price = book.Price,
+            Stock = book.Stock,
+            MinStock = book.MinStock,
+            LastUpdatedAt =
+                book.LastUpdatedAt,
+            CategoryName =
+                book.Category?.Name ?? ""
+        };
+    }
 }
+

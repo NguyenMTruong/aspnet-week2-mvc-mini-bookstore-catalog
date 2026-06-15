@@ -1,55 +1,54 @@
-@model List<BookListItemViewModel>
+@model List<MiniBookstoreCatalog.Mvc.ViewModels.BookListItemViewModel>
 
 @{
     ViewData["Title"] = "Book Catalog";
-    var totalItems = Model.Count;
 }
 
-<div class="page-header">
-    <div>
-        <h2 class="page-title">Book Catalog</h2>
-        <p class="page-description">
-            Đây là trang danh sách sản phẩm của cửa hàng.
-            Giao diện được render bằng Partial View.
-        </p>
-    </div>
+<h2>Book Catalog</h2>
 
-    <div>
-        <a class="btn btn-secondary"
-           asp-controller="Books"
-           asp-action="Search">
-            Search Book
-        </a>
+<p>
+    <a asp-action="Create"
+       class="btn btn-primary">
+        Add New Book
+    </a>
 
-        <a class="btn"
-           asp-controller="Books"
-           asp-action="Create">
-            Create Book
-        </a>
-    </div>
-</div>
+    <a asp-action="Stats"
+       class="btn btn-success">
+        Inventory Stats
+    </a>
+</p>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="success-box">
-        @TempData["SuccessMessage"]
-    </div>
-}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th></th>
+        </tr>
+    </thead>
 
-<div class="info-box">
-    <strong>Tổng số sản phẩm:</strong> @totalItems
-</div>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.ISBN</td>
+            <td>@item.Title</td>
+            <td>@item.Author</td>
+            <td>@item.CategoryName</td>
+            <td>@item.Price.ToString("N0") VNĐ</td>
+            <td>@item.Stock</td>
+            <td>
+                <a asp-action="Detail"
+                   asp-route-id="@item.Id">
+                    Detail
+                </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
 
-@if (Model.Count == 0)
-{
-    <p>Chưa có sản phẩm nào trong hệ thống.</p>
-}
-else
-{
-    <div class="book-grid">
-        @foreach (var item in Model)
-        {
-            <partial name="_BookCard" model="item" />
-        }
-    </div>
-}
