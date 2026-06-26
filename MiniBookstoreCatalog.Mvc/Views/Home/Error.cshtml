@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1>
+    Có lỗi xảy ra
+</h1>
+
+@if(ViewBag.StatusCode != null)
+{
+    <h3>
+        Status Code:
+        @ViewBag.StatusCode
+    </h3>
+}
+
+<p>
+    Vui lòng thử lại sau.
+</p>
+

@@ -21,6 +21,9 @@ public class AppDbContext : DbContext
 
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -52,6 +55,22 @@ public class AppDbContext : DbContext
             .IsRowVersion();
 
         modelBuilder.Entity<Order>()
+            .Property(x => x.RowVersion)
+            .IsRowVersion();
+
+        modelBuilder.Entity<AuditLog>()
+            .Property(x => x.Action)
+            .HasMaxLength(30);
+
+        modelBuilder.Entity<AuditLog>()
+            .Property(x => x.EntityName)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<AuditLog>()
+            .Property(x => x.UserName)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<AuditLog>()
             .Property(x => x.RowVersion)
             .IsRowVersion();
 
@@ -185,7 +204,59 @@ public class AppDbContext : DbContext
     {
         UpdateAuditFields();
 
+        await WriteAuditLogs();
+
         return await base.SaveChangesAsync(cancellationToken);
     }
+
+    private async Task WriteAuditLogs()
+    {
+        var entries = ChangeTracker
+            .Entries()
+            .Where(e =>
+                e.Entity is not AuditLog &&
+                e.State != EntityState.Unchanged &&
+                e.State != EntityState.Detached)
+            .ToList();
+
+        foreach (var entry in entries)
+        {
+            var audit = new AuditLog
+            {
+                EntityName = entry.Entity.GetType().Name,
+                UserName = "System"
+            };
+
+            if (entry.State == EntityState.Added)
+            {
+                audit.Action = "Create";
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                audit.Action = "Update";
+            }
+            else if (entry.State == EntityState.Deleted)
+            {
+                audit.Action = "Delete";
+            }
+
+            audit.OldValues =
+                System.Text.Json.JsonSerializer.Serialize(
+                    entry.OriginalValues.Properties
+                        .ToDictionary(
+                            p => p.Name,
+                            p => entry.OriginalValues[p]));
+
+            audit.NewValues =
+                System.Text.Json.JsonSerializer.Serialize(
+                    entry.CurrentValues.Properties
+                        .ToDictionary(
+                            p => p.Name,
+                            p => entry.CurrentValues[p]));
+
+            AuditLogs.Add(audit);
+        }
+    }
+
 }
 

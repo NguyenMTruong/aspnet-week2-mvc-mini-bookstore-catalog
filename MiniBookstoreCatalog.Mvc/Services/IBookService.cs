@@ -27,5 +27,9 @@ public interface IBookService
     Task<List<BookListItemViewModel>> GetDeletedAsync();
 
     Task RestoreAsync(int id);
+
+    Task<BookEditViewModel?> GetForEditAsync(int id);
+
+    Task UpdateAsync(BookEditViewModel model);
 }
 

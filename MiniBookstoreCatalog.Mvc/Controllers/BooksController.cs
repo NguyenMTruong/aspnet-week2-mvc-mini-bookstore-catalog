@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MiniBookstoreCatalog.Mvc.Services;
 using MiniBookstoreCatalog.Mvc.ViewModels;
 
@@ -7,15 +8,21 @@ namespace MiniBookstoreCatalog.Mvc.Controllers;
 public class BooksController : Controller
 {
     private readonly IBookService _bookService;
+    private readonly ILogger<BooksController> _logger;
 
     public BooksController(
-        IBookService bookService)
+    IBookService bookService,
+    ILogger<BooksController> logger)
     {
         _bookService = bookService;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index()
     {
+        _logger.LogInformation(
+            "Loading book list");
+
         var books =
             await _bookService.GetAllAsync();
 
@@ -43,30 +50,12 @@ public class BooksController : Controller
         return View(stats);
     }
 
+    // HTTP GET
     [HttpGet]
     public IActionResult Create()
     {
         return View(
             new BookCreateViewModel());
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(
-        BookCreateViewModel model)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-
-        await _bookService.CreateAsync(model);
-
-        TempData["Success"] =
-            "Thêm sách thành công";
-
-        return RedirectToAction(
-            nameof(Index));
     }
 
     [HttpGet]
@@ -89,6 +78,38 @@ public class BooksController : Controller
 
         return View(result);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var model = await _bookService.GetForEditAsync(id);
+
+        if (model == null)
+            return NotFound();
+
+        return View(model);
+    }
+
+    // HTTP POST
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(
+        BookCreateViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        await _bookService.CreateAsync(model);
+
+        TempData["Success"] =
+            "Thêm sách thành công";
+
+        return RedirectToAction(
+            nameof(Index));
+    }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -114,6 +135,33 @@ public class BooksController : Controller
         return RedirectToAction(nameof(Trash));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(BookEditViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        try
+        {
+            await _bookService.UpdateAsync(model);
+
+            TempData["Success"] =
+                "Cập nhật thành công.";
+
+            return RedirectToAction(nameof(Index));
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            ModelState.AddModelError(
+                "",
+                "Dữ liệu đã được người khác thay đổi. Vui lòng tải lại trang.");
+
+            return View(model);
+        }
+    }
+
+    // METHOD
     public async Task<IActionResult> LowStock()
     {
         var books =

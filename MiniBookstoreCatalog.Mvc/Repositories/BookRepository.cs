@@ -57,8 +57,11 @@ public class BookRepository : IBookRepository
         await _context.Books.AddAsync(book);
     }
 
-    public Task UpdateAsync(Book book)
+    public Task UpdateAsync(Book book, byte[] rowVersion)
     {
+        _context.Entry(book)
+            .Property(x => x.RowVersion)
+            .OriginalValue = rowVersion;
         _context.Books.Update(book);
         return Task.CompletedTask;
     }

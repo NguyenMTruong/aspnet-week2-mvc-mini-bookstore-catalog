@@ -4,8 +4,10 @@ namespace MiniBookstoreCatalog.Mvc.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    public IActionResult Error(int? id)
     {
+        ViewBag.StatusCode = id;
+
         return View();
     }
 }

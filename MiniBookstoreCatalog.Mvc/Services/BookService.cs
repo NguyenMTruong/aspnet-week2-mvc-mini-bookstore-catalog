@@ -19,8 +19,7 @@ public class BookService : IBookService
         _settings = options.Value;
     }
 
-    public async Task<List<BookListItemViewModel>>
-        GetAllAsync()
+    public async Task<List<BookListItemViewModel>> GetAllAsync()
     {
         var books =
             await _repository.GetAllReadOnlyAsync();
@@ -29,8 +28,7 @@ public class BookService : IBookService
             .ToList();
     }
 
-    public async Task<BookDetailViewModel?>
-        GetByIdAsync(int id)
+    public async Task<BookDetailViewModel?> GetByIdAsync(int id)
     {
         var book =
             await _repository.GetByIdAsync(id);
@@ -41,8 +39,7 @@ public class BookService : IBookService
         return ToDetail(book);
     }
 
-    public async Task<List<BookListItemViewModel>>
-        SearchAsync(string keyword)
+    public async Task<List<BookListItemViewModel>> SearchAsync(string keyword)
     {
         var books =
             await _repository.SearchAsync(keyword);
@@ -71,8 +68,7 @@ public class BookService : IBookService
         await _repository.SaveChangesAsync();
     }
 
-    public async Task<BookStatsViewModel>
-        GetStatsAsync()
+    public async Task<BookStatsViewModel> GetStatsAsync()
     {
         var books =
             await _repository.GetAllReadOnlyAsync();
@@ -98,8 +94,7 @@ public class BookService : IBookService
         };
     }
 
-    private static BookListItemViewModel
-        ToListItem(Book book)
+    private static BookListItemViewModel ToListItem(Book book)
     {
         return new BookListItemViewModel
         {
@@ -115,8 +110,7 @@ public class BookService : IBookService
         };
     }
 
-    private static BookDetailViewModel
-        ToDetail(Book book)
+    private static BookDetailViewModel ToDetail(Book book)
     {
         return new BookDetailViewModel
         {
@@ -177,8 +171,7 @@ public class BookService : IBookService
         await _repository.SaveChangesAsync();
     }
 
-    public async Task<List<BookListItemViewModel>>
-    GetDeletedAsync()
+    public async Task<List<BookListItemViewModel>> GetDeletedAsync()
     {
         var books =
             await _repository.GetDeletedAsync();
@@ -188,6 +181,51 @@ public class BookService : IBookService
             .ToList();
     }
 
+    public async Task<BookEditViewModel?> GetForEditAsync(int id)
+    {
+        var book = await _repository.GetByIdAsync(id);
 
+        if (book == null)
+            return null;
+
+        return new BookEditViewModel
+        {
+            Id = book.Id,
+            ISBN = book.ISBN,
+            BookCode = book.BookCode,
+            Title = book.Title,
+            Author = book.Author,
+            Price = book.Price,
+            Stock = book.Stock,
+            MinStock = book.MinStock,
+            CategoryId = book.CategoryId,
+
+            RowVersion = book.RowVersion
+        };
+    }
+
+    public async Task UpdateAsync(BookEditViewModel model)
+    {
+        var book = await _repository.GetByIdAsync(model.Id);
+
+        if (book == null)
+            throw new Exception("Book not found.");
+
+        book.ISBN = model.ISBN;
+        book.BookCode = model.BookCode;
+        book.Title = model.Title;
+        book.Author = model.Author;
+        book.Price = model.Price;
+        book.Stock = model.Stock;
+        book.MinStock = model.MinStock;
+        book.CategoryId = model.CategoryId;
+
+        // Tạm thời vẫn giữ để không ảnh hưởng các View hiện có
+        book.LastUpdatedAt = DateTime.UtcNow;
+
+        await _repository.UpdateAsync(book, model.RowVersion);
+
+        await _repository.SaveChangesAsync();
+    }
 }
 
