@@ -36,7 +36,22 @@ public class BooksController : Controller
 
         if (book == null)
         {
-            return NotFound();
+            return Problem(
+                statusCode: 404,
+                title: "Book not found",
+                Extensions: new Dictionary<string, object?>
+                {
+                     {
+                    "errorCode",
+                    "BOOK_NOT_FOUND"
+                },
+
+                {
+                    "traceId",
+                    HttpContext.TraceIdentifier
+                }
+                }
+            );
         }
 
         return View(book);
@@ -68,12 +83,32 @@ public class BooksController : Controller
 
 
         if (model == null)
-            return NotFound();
+            return Problem(
+                statusCode: 404,
+                title: "Book not found",
+                Extensions: new Dictionary<string, object?>
+                {
+                     {
+                    "errorCode",
+                    "BOOK_NOT_FOUND"
+                },
+
+                {
+                    "traceId",
+                    HttpContext.TraceIdentifier
+                }
+                }
+            );
 
 
 
         return View(model);
 
+    }
+
+    private IActionResult Problem(int statusCode, string title, Dictionary<string, object?> Extensions)
+    {
+        throw new NotImplementedException();
     }
 
     [HttpGet]
@@ -113,7 +148,22 @@ public class BooksController : Controller
         var model = await _bookService.GetForEditAsync(id);
 
         if (model == null)
-            return NotFound();
+            return Problem(
+                statusCode: 404,
+                title: "Book not found",
+                Extensions: new Dictionary<string, object?>
+                {
+                     {
+                    "errorCode",
+                    "BOOK_NOT_FOUND"
+                },
+
+                {
+                    "traceId",
+                    HttpContext.TraceIdentifier
+                }
+                }
+            );
 
         return View(model);
     }
