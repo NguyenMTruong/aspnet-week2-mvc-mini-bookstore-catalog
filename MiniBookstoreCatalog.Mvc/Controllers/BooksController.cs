@@ -60,25 +60,35 @@ public class BooksController : Controller
 
     [HttpGet]
     public async Task<IActionResult> Search(
-        string keyword)
+    string keyword,
+    decimal? minPrice,
+    string? stockStatus)
     {
-        if (string.IsNullOrWhiteSpace(
-            keyword))
-        {
-            var books =
-                await _bookService
-                    .GetAllAsync();
-
-            return View(books);
-        }
 
         var result =
-            await _bookService
-                .SearchAsync(keyword);
+            await _bookService.SearchAsync(
+                keyword,
+                minPrice,
+                stockStatus);
 
-        return View(result);
+
+
+        var model = new BookSearchViewModel
+        {
+            Keyword = keyword,
+
+            MinPrice = minPrice,
+
+            StockStatus = stockStatus,
+
+            Books = result
+        };
+
+
+
+        return View(model);
     }
-
+    
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {

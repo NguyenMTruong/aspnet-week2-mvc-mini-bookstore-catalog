@@ -10,7 +10,10 @@ public interface IBookRepository
 
     Task<Book?> GetByIdAsync(int id);
 
-    Task<List<Book>> SearchAsync(string keyword);
+    Task<List<Book>> SearchAsync(
+    string keyword,
+    decimal? minPrice,
+    string? stockStatus);
 
     Task AddAsync(Book book);
 

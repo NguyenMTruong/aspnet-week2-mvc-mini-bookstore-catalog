@@ -1,38 +1,232 @@
+@model MiniBookstoreCatalog.Mvc.ViewModels.BookSearchViewModel
 
-@model List<MiniBookstoreCatalog.Mvc.ViewModels.BookListItemViewModel>
 
 @{
     ViewData["Title"] = "Search Books";
 }
 
-<h2>Search Books</h2>
 
-<form method="get">
+<div class="container mt-4">
 
-    <input name="keyword"
-           class="form-control"
-           placeholder="Keyword..." />
 
-    <br />
+    <h2 class="mb-4">
+        📚 Search Books
+    </h2>
 
-    <button class="btn btn-primary">
-        Search
-    </button>
 
-</form>
 
-<hr />
+    <div class="card shadow-sm mb-4">
 
-<table class="table table-bordered">
+        <div class="card-body">
 
-@foreach(var item in Model)
-{
-    <tr>
-        <td>@item.Title</td>
-        <td>@item.Author</td>
-        <td>@item.CategoryName</td>
-    </tr>
-}
 
-</table>
+            <form method="get" asp-action="Search">
+
+
+                <div class="row g-3">
+
+
+                    <!-- Keyword -->
+                    <div class="col-md-5">
+
+                        <label class="form-label">
+                            Keyword
+                        </label>
+
+
+                        <input name="keyword" value="@Model.Keyword" class="form-control"
+                               placeholder="Title, Author, ISBN..." />
+
+                    </div>
+
+
+
+                    <!-- Min price -->
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Minimum Price
+                        </label>
+
+
+                        <input name="minPrice" value="@Model.MinPrice" type="number" class="form-control"
+                               placeholder="0" />
+
+                    </div>
+
+
+
+
+                    <!-- Stock -->
+                    <div class="col-md-2">
+
+
+                        <label class="form-label">
+                            Stock
+                        </label>
+
+
+                        <select name="stockStatus" class="form-select">
+
+
+                            <option value="">
+                                All
+                            </option>
+
+
+                            <option value="low" selected="@(Model.StockStatus == "low")">
+                                Low Stock
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+
+
+                    <div class="col-md-2 d-flex align-items-end">
+
+
+                        <button class="btn btn-primary w-100">
+
+                            🔍 Search
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+
+
+
+
+    @if (Model.Books == null || !Model.Books.Any())
+    {
+
+        <div class="alert alert-warning">
+
+            Không tìm thấy sách phù hợp.
+
+        </div>
+
+    }
+    else
+    {
+
+
+        <div class="card shadow-sm">
+
+
+            <div class="card-body">
+
+
+                <table class="table table-hover">
+
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>
+                                Title
+                            </th>
+
+
+                            <th>
+                                Author
+                            </th>
+
+
+                            <th>
+                                Category
+                            </th>
+
+
+                            <th>
+                                Price
+                            </th>
+
+
+                            <th>
+                                Stock
+                            </th>
+
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        @foreach (var item in Model.Books)
+                        {
+
+                            <tr>
+
+
+                                <td>
+                                    @item.Title
+                                </td>
+
+
+                                <td>
+                                    @item.Author
+                                </td>
+
+
+                                <td>
+                                    @item.CategoryName
+                                </td>
+
+
+                                <td>
+                                    @item.Price.ToString("N0")
+                                </td>
+
+
+                                <td>
+
+                                    @item.Stock
+
+                                </td>
+
+
+                            </tr>
+
+                        }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    }
+
+
+</div>
 

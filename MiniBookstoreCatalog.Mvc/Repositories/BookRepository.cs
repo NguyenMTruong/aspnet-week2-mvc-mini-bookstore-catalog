@@ -39,19 +39,51 @@ public class BookRepository : IBookRepository
                 !x.IsDeleted);
     }
 
-    public async Task<List<Book>> SearchAsync(string keyword)
+    public async Task<List<Book>> SearchAsync(
+    string keyword,
+    decimal? minPrice,
+    string? stockStatus)
     {
-        keyword = keyword.ToLower();
 
-        return await _context.Books
+        var query =
+            _context.Books
+            .AsNoTracking()
             .Include(x => x.Category)
-            .Where(x => !x.IsDeleted && (
-                x.Title.ToLower().Contains(keyword)
-                || x.Author.ToLower().Contains(keyword)
-                || x.ISBN.ToLower().Contains(keyword)))
-            .ToListAsync();
-    }
+            .Where(x => !x.IsDeleted);
 
+
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            query = query.Where(x =>
+                x.Title.Contains(keyword)
+                ||
+                x.Author.Contains(keyword)
+                ||
+                x.ISBN.Contains(keyword));
+        }
+
+
+
+        if (minPrice.HasValue)
+        {
+            query = query.Where(x =>
+                x.Price >= minPrice.Value);
+        }
+
+
+
+        if (stockStatus == "low")
+        {
+            query = query.Where(x =>
+                x.Stock < x.MinStock);
+        }
+
+
+
+        return await query.ToListAsync();
+
+    }
     public async Task AddAsync(Book book)
     {
         await _context.Books.AddAsync(book);

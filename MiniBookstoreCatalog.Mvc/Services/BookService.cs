@@ -39,15 +39,25 @@ public class BookService : IBookService
         return ToDetail(book);
     }
 
-    public async Task<List<BookListItemViewModel>> SearchAsync(string keyword)
+    public async Task<List<BookListItemViewModel>> SearchAsync(
+    string keyword,
+    decimal? minPrice,
+    string? stockStatus)
     {
+
         var books =
-            await _repository.SearchAsync(keyword);
+            await _repository.SearchAsync(
+                keyword,
+                minPrice,
+                stockStatus);
 
-        return books.Select(ToListItem)
+
+
+        return books
+            .Select(ToListItem)
             .ToList();
-    }
 
+    }
     public async Task CreateAsync(
         BookCreateViewModel model)
     {

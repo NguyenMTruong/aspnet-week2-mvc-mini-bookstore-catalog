@@ -11,7 +11,10 @@ public interface IBookService
 
     Task<BookStatsViewModel> GetStatsAsync();
 
-    Task<List<BookListItemViewModel>> SearchAsync(string keyword);
+    Task<List<BookListItemViewModel>> SearchAsync(
+    string keyword,
+    decimal? minPrice,
+    string? stockStatus);
 
     Task CreateAsync(BookCreateViewModel model);
 
