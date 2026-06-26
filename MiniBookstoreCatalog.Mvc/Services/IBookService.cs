@@ -1,0 +1,25 @@
+using MiniBookstoreCatalog.Mvc.ViewModels;
+using MiniBookstoreCatalog.Mvc.Models;
+
+namespace MiniBookstoreCatalog.Mvc.Services;
+
+public interface IBookService
+{
+    Task<List<BookListItemViewModel>> GetAllAsync();
+
+    Task<BookDetailViewModel?> GetByIdAsync(int id);
+
+    Task<BookStatsViewModel> GetStatsAsync();
+
+    Task<List<BookListItemViewModel>> SearchAsync(string keyword);
+
+    Task CreateAsync(BookCreateViewModel model);
+
+    Task<List<Book>> GetLowStockBooksAsync();
+
+    Task<List<BookListItemViewModel>> FilterAsync(
+        int? categoryId,
+        decimal? minPrice,
+        decimal? maxPrice);
+}
+

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using MiniBookstoreCatalog.Mvc.Models;
 using MiniBookstoreCatalog.Mvc.Services;
 using MiniBookstoreCatalog.Mvc.ViewModels;
 
@@ -7,134 +6,110 @@ namespace MiniBookstoreCatalog.Mvc.Controllers;
 
 public class BooksController : Controller
 {
-    private readonly BookService _bookService;
+    private readonly IBookService _bookService;
 
-    public BooksController(BookService bookService)
+    public BooksController(
+        IBookService bookService)
     {
         _bookService = bookService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var books = _bookService.GetAll()
-            .Select(ToListItemViewModel)
-            .ToList();
+        var books =
+            await _bookService.GetAllAsync();
 
         return View(books);
     }
 
-    public IActionResult Detail(int id)
+    public async Task<IActionResult> Detail(int id)
     {
-        var book = _bookService.GetById(id);
+        var book =
+            await _bookService.GetByIdAsync(id);
 
         if (book == null)
         {
-            return NotFound($"Book with id = {id} not found");
+            return NotFound();
         }
 
-        return View(ToDetailViewModel(book));
+        return View(book);
     }
 
-    public IActionResult Stats()
+    public async Task<IActionResult> Stats()
     {
-        var stats = _bookService.GetStats();
+        var stats =
+            await _bookService.GetStatsAsync();
+
         return View(stats);
-    }
-
-    public IActionResult Welcome()
-    {
-        return Content("Welcome to Mini Bookstore Catalog MVC");
-    }
-
-    public IActionResult BookJson()
-    {
-        var books = _bookService.GetAll();
-        return Json(books);
-    }
-
-    public IActionResult GoToList()
-    {
-        return RedirectToAction(nameof(Index));
-    }
-
-    public IActionResult Force404()
-    {
-        return NotFound("404 Demo Response");
-    }
-
-    private static BookListItemViewModel ToListItemViewModel(Book book)
-    {
-        return new BookListItemViewModel
-        {
-            Id = book.Id,
-            Code = book.Code,
-            Title = book.Title,
-            Category = book.Category,
-            Price = book.Price,
-            Quantity = book.Quantity,
-            MinStock = book.MinStock
-        };
-    }
-
-    private static BookDetailViewModel ToDetailViewModel(Book book)
-    {
-        return new BookDetailViewModel
-        {
-            Id = book.Id,
-            Code = book.Code,
-            Title = book.Title,
-            Category = book.Category,
-            Author = book.Author,
-            Price = book.Price,
-            Quantity = book.Quantity,
-            MinStock = book.MinStock,
-            LastUpdatedAt = book.LastUpdatedAt
-        };
-    }
-
-    [HttpGet]
-    public IActionResult Search(string? keyword, decimal? minPrice)
-    {
-        var products = _bookService.Search(keyword, minPrice)
-            .Select(ToListItemViewModel)
-            .ToList();
-
-        var viewModel = new BookSearchViewModel
-        {
-            Keyword = keyword ?? "",
-            MinPrice = minPrice,
-            Books = products
-        };
-
-        return View(viewModel);
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        var viewModel = new BookCreateViewModel
-        {
-            Quantity = 1,
-            MinStock = 1
-        };
-
-        return View(viewModel);
+        return View(
+            new BookCreateViewModel());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(BookCreateViewModel model)
+    public async Task<IActionResult> Create(
+        BookCreateViewModel model)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        _bookService.Create(model);
+        await _bookService.CreateAsync(model);
 
-        TempData["SuccessMessage"] = "Đã thêm sản phẩm thành công.";
+        TempData["Success"] =
+            "Thêm sách thành công";
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(
+            nameof(Index));
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Search(
+        string keyword)
+    {
+        if (string.IsNullOrWhiteSpace(
+            keyword))
+        {
+            var books =
+                await _bookService
+                    .GetAllAsync();
+
+            return View(books);
+        }
+
+        var result =
+            await _bookService
+                .SearchAsync(keyword);
+
+        return View(result);
+    }
+
+    public async Task<IActionResult> LowStock()
+    {
+        var books =
+            await _bookService.GetLowStockBooksAsync();
+
+        return View(books);
+    }
+
+    public async Task<IActionResult> Filter(
+    int? categoryId,
+    decimal? minPrice,
+    decimal? maxPrice)
+    {
+        var result =
+            await _bookService.FilterAsync(
+                categoryId,
+                minPrice,
+                maxPrice);
+
+        return View(result);
+    }
 }
+

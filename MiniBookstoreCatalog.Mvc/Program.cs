@@ -1,9 +1,27 @@
+using Microsoft.EntityFrameworkCore;
+using MiniBookstoreCatalog.Mvc.Data;
 using MiniBookstoreCatalog.Mvc.Services;
+using MiniBookstoreCatalog.Mvc.Repositories;
+using MiniBookstoreCatalog.Mvc.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<AppSettings>(
+    builder.Configuration.GetSection("AppSettings"));
+
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<BookService>();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString(
+            "DefaultConnection"));
+});
+
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 
@@ -13,7 +31,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
@@ -23,7 +41,8 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"
-);
+    pattern:
+    "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+

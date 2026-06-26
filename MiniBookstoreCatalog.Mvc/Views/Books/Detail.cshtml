@@ -1,123 +1,52 @@
-@model BookDetailViewModel
+@model MiniBookstoreCatalog.Mvc.ViewModels.BookDetailViewModel
 
 @{
     ViewData["Title"] = "Book Detail";
 }
 
-<div class="page-header">
-    <div>
-        <h2 class="page-title">Book Detail</h2>
+<h2>Book Detail</h2>
 
-        <p class="page-description">
-            Thông tin chi tiết của sách trong cửa hàng.
-        </p>
-    </div>
+<table class="table table-bordered">
 
-    <a class="btn btn-light" href="/Books">
-        Quay lại danh sách
-    </a>
-</div>
+    <tr>
+        <th>ISBN</th>
+        <td>@Model.ISBN</td>
+    </tr>
 
-<div class="detail-layout">
+    <tr>
+        <th>Title</th>
+        <td>@Model.Title</td>
+    </tr>
 
-    <div>
-        <table class="table table-bordered">
+    <tr>
+        <th>Author</th>
+        <td>@Model.Author</td>
+    </tr>
 
-            <tr>
-                <th>ID</th>
-                <td>@Model.Id</td>
-            </tr>
+    <tr>
+        <th>Category</th>
+        <td>@Model.CategoryName</td>
+    </tr>
 
-            <tr>
-                <th>Mã sách</th>
-                <td>@Model.Code</td>
-            </tr>
+    <tr>
+        <th>Price</th>
+        <td>@Model.Price.ToString("N0") VNĐ</td>
+    </tr>
 
-            <tr>
-                <th>Tên sách</th>
-                <td>@Model.Title</td>
-            </tr>
+    <tr>
+        <th>Stock</th>
+        <td>@Model.Stock</td>
+    </tr>
 
-            <tr>
-                <th>Thể loại</th>
-                <td>@Model.Category</td>
-            </tr>
+    <tr>
+        <th>Last Updated</th>
+        <td>@Model.LastUpdatedAt</td>
+    </tr>
 
-            <tr>
-                <th>Tác giả</th>
-                <td>@Model.Author</td>
-            </tr>
+</table>
 
-            <tr>
-                <th>Giá bán</th>
-                <td>@Model.PriceText</td>
-            </tr>
+<a asp-action="Index"
+   class="btn btn-secondary">
+    Back
+</a>
 
-            <tr>
-                <th>Số lượng tồn kho</th>
-                <td>@Model.Quantity</td>
-            </tr>
-
-            <tr>
-                <th>Mức tồn tối thiểu</th>
-                <td>@Model.MinStock</td>
-            </tr>
-
-            <tr>
-                <th>Giá trị tồn kho</th>
-                <td>@Model.InventoryValueText</td>
-            </tr>
-
-            <tr>
-                <th>Trạng thái</th>
-                <td>@Model.StockStatus</td>
-            </tr>
-
-            <tr>
-                <th>Gợi ý nhập thêm</th>
-                <td>@Model.ReorderSuggestion</td>
-            </tr>
-
-            <tr>
-                <th>Cập nhật lần cuối</th>
-                <td>@Model.LastUpdatedText</td>
-            </tr>
-
-        </table>
-    </div>
-
-    <div>
-
-        <div class="side-card warning">
-            <h4>Trạng thái kho sách</h4>
-
-            <h3>@Model.StockStatus</h3>
-
-            <p>
-                @Model.ReorderSuggestion
-            </p>
-        </div>
-
-        <div class="side-card info">
-            <h4>Giá trị tồn kho</h4>
-
-            <h3>@Model.InventoryValueText</h3>
-
-            <p>
-                Tổng giá trị sách hiện có trong kho.
-            </p>
-        </div>
-
-        <div class="side-card success">
-            <h4>Cập nhật gần nhất</h4>
-
-            <h3>@Model.LastUpdatedText</h3>
-
-            <p>
-                Thời gian cập nhật dữ liệu sách gần nhất.
-            </p>
-        </div>
-
-    </div>
-
-</div>

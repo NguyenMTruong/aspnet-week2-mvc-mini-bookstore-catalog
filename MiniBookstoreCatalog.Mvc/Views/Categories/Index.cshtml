@@ -1,0 +1,16 @@
+@model List<MiniBookstoreCatalog.Mvc.Models.Category>
+
+<h2>Categories</h2>
+
+<table class="table table-bordered">
+
+@foreach(var category in Model)
+{
+    <tr>
+        <td>@category.Name</td>
+        <td>@category.Books.Count</td>
+    </tr>
+}
+
+</table>
+

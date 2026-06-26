@@ -1,104 +1,38 @@
-@model BookSearchViewModel
+
+@model List<MiniBookstoreCatalog.Mvc.ViewModels.BookListItemViewModel>
 
 @{
     ViewData["Title"] = "Search Books";
 }
 
-<div class="page-header">
-    <div>
-        <h2 class="page-title">Search Books</h2>
-        <p class="page-description">
-            Form GET dùng Query String để tìm kiếm sản phẩm theo từ khóa và giá tối thiểu.
-        </p>
-    </div>
+<h2>Search Books</h2>
 
-    <a class="btn btn-light"
-       asp-controller="Books"
-       asp-action="Index">
-        Quay lại danh sách
-    </a>
-</div>
+<form method="get">
 
-<div class="form-layout">
-    <form class="form-box"
-          asp-controller="Books"
-          asp-action="Search"
-          method="get">
+    <input name="keyword"
+           class="form-control"
+           placeholder="Keyword..." />
 
-        <div class="form-group">
-            <label asp-for="Keyword">Từ khóa</label>
-            <input asp-for="Keyword"
-                   class="form-control"
-                   placeholder="Ví dụ: mouse, keyboard, monitor" />
-        </div>
+    <br />
 
-        <div class="form-group">
-            <label asp-for="MinPrice">Giá tối thiểu</label>
-            <input asp-for="MinPrice"
-                   class="form-control"
-                   placeholder="Ví dụ: 300000" />
-        </div>
+    <button class="btn btn-primary">
+        Search
+    </button>
 
-        <button class="btn" type="submit">
-            Search
-        </button>
+</form>
 
-        <a class="btn btn-secondary"
-           asp-controller="Books"
-           asp-action="Search">
-            Reset
-        </a>
-    </form>
+<hr />
 
-    <div>
-        <h3>Search Result</h3>
+<table class="table table-bordered">
 
-        <p>
-            Keyword: <strong>@Model.Keyword</strong>
-        </p>
+@foreach(var item in Model)
+{
+    <tr>
+        <td>@item.Title</td>
+        <td>@item.Author</td>
+        <td>@item.CategoryName</td>
+    </tr>
+}
 
-        <p>
-            Min Price: <strong>@Model.MinPrice</strong>
-        </p>
+</table>
 
-        @if (Model.Books.Count == 0)
-        {
-            <p>Không tìm thấy sản phẩm phù hợp.</p>
-        }
-        else
-        {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Tên sản phẩm</th>
-                        <th>Nhóm</th>
-                        <th>Giá bán</th>
-                        <th>Số lượng</th>
-                        <th>Trạng thái</th>
-                        <th>Chi tiết</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach (var item in Model.Books)
-                    {
-                        <tr>
-                            <td>@item.Title</td>
-                            <td>@item.Category</td>
-                            <td>@item.PriceText</td>
-                            <td>@item.Quantity</td>
-                            <td>@item.StockStatus</td>
-                            <td>
-                                <a asp-controller="Books"
-                                   asp-action="Detail"
-                                   asp-route-id="@item.Id">
-                                    Xem
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </div>
-</div>
