@@ -227,6 +227,17 @@ public class AppDbContext : DbContext
                 UserName = "System"
             };
 
+            // ✅ FIX ENTITY ID
+            var key = entry.Properties
+                .FirstOrDefault(p => p.Metadata.IsPrimaryKey());
+
+            if (key != null)
+            {
+                audit.EntityId = key.CurrentValue != null
+                    ? Convert.ToInt32(key.CurrentValue)
+                    : 0;
+            }
+
             if (entry.State == EntityState.Added)
             {
                 audit.Action = "Create";
@@ -257,6 +268,5 @@ public class AppDbContext : DbContext
             AuditLogs.Add(audit);
         }
     }
-
 }
 

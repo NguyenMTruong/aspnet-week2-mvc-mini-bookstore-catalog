@@ -1,115 +1,69 @@
 @model MiniBookstoreCatalog.Mvc.ViewModels.AuditLogFilterViewModel
 
-@{
-    ViewData["Title"] = "Audit Logs";
-}
-
 <h2>Audit Logs</h2>
 
-<form asp-action="Index" method="get" class="row g-3 mb-3">
+<p><b>Total logs:</b> @Model.Logs.Count</p>
+
+<form method="get" class="row g-3 mb-3">
 
     <div class="col-md-3">
-        <input asp-for="EntityName"
-               class="form-control"
-               placeholder="Entity Name" />
+        <input asp-for="EntityName" class="form-control" placeholder="Entity Name" />
     </div>
 
     <div class="col-md-3">
         <select asp-for="Action" class="form-select">
-            <option value="">-- All Actions --</option>
-            <option value="Create">Create</option>
-            <option value="Update">Update</option>
-            <option value="Delete">Delete</option>
-            <option value="Restore">Restore</option>
+            <option value="">-- All --</option>
+            <option>Create</option>
+            <option>Update</option>
+            <option>Delete</option>
+            <option>Restore</option>
         </select>
     </div>
 
     <div class="col-md-2">
-        <input asp-for="FromDate"
-               type="date"
-               class="form-control" />
+        <input asp-for="FromDate" type="date" class="form-control" />
     </div>
 
     <div class="col-md-2">
-        <input asp-for="ToDate"
-               type="date"
-               class="form-control" />
+        <input asp-for="ToDate" type="date" class="form-control" />
     </div>
 
     <div class="col-md-2">
-        <button type="submit"
-                class="btn btn-primary w-100">
-            Search
-        </button>
+        <button class="btn btn-primary w-100">Search</button>
     </div>
 
 </form>
 
-<table class="table table-bordered table-hover">
-
+@if (Model.Logs.Count == 0)
+{
+    <div class="alert alert-warning">
+        No audit logs found.
+    </div>
+}
+else
+{
+<table class="table table-bordered">
     <thead>
-
         <tr>
-
             <th>Time</th>
-
             <th>Entity</th>
-
-            <th>Entity Id</th>
-
+            <th>EntityId</th>
             <th>Action</th>
-
             <th>User</th>
-
         </tr>
-
     </thead>
 
     <tbody>
-
-@foreach(var item in Model.Logs)
-{
-    <tr>
-
-        <td>@item.CreatedAt</td>
-
-        <td>@item.EntityName</td>
-
-        <td>@item.EntityId</td>
-
-        <td>
-
-            @switch(item.Action)
-            {
-                case "Create":
-                    <span class="badge bg-success">Create</span>
-                    break;
-
-                case "Update":
-                    <span class="badge bg-primary">Update</span>
-                    break;
-
-                case "Delete":
-                    <span class="badge bg-danger">Delete</span>
-                    break;
-
-                case "Restore":
-                    <span class="badge bg-warning text-dark">Restore</span>
-                    break;
-
-                default:
-                    <span>@item.Action</span>
-                    break;
-            }
-
-        </td>
-
-        <td>@item.UserName</td>
-
-    </tr>
-}
-
+    @foreach (var item in Model.Logs)
+    {
+        <tr>
+            <td>@item.CreatedAt</td>
+            <td>@item.EntityName</td>
+            <td>@item.EntityId</td>
+            <td>@item.Action</td>
+            <td>@item.UserName</td>
+        </tr>
+    }
     </tbody>
-
 </table>
-
+}

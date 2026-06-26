@@ -36,10 +36,10 @@ public class AuditLogService : IAuditLogService
     }
 
     public async Task<AuditLogFilterViewModel> FilterAsync(
-    string? entityName,
-    string? action,
-    DateTime? fromDate,
-    DateTime? toDate)
+        string? entityName,
+        string? action,
+        DateTime? fromDate,
+        DateTime? toDate)
     {
         var logs = await _repository.FilterAsync(
             entityName,
@@ -53,6 +53,7 @@ public class AuditLogService : IAuditLogService
             Action = action,
             FromDate = fromDate,
             ToDate = toDate,
+
             Logs = logs.Select(x => new AuditLogViewModel
             {
                 Id = x.Id,
@@ -60,9 +61,7 @@ public class AuditLogService : IAuditLogService
                 EntityId = x.EntityId,
                 Action = x.Action,
                 CreatedAt = x.CreatedAt,
-                UserName = x.UserName,
-                OldValues = x.OldValues,
-                NewValues = x.NewValues
+                UserName = x.UserName
             }).ToList()
         };
     }

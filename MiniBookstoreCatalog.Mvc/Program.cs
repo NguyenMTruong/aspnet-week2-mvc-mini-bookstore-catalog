@@ -3,13 +3,27 @@ using MiniBookstoreCatalog.Mvc.Data;
 using MiniBookstoreCatalog.Mvc.Services;
 using MiniBookstoreCatalog.Mvc.Repositories;
 using MiniBookstoreCatalog.Mvc.Options;
-
 using Serilog;
-
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Log.Logger =
+// new LoggerConfiguration()
+//     .WriteTo.File(
+//         "logs/lab05-.txt",
+//         rollingInterval:
+//         RollingInterval.Day)
+//     .CreateLogger();
+
+// builder.Host.UseSerilog();
+
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/lab05-.txt", rollingInterval: RollingInterval.Day));
 
 builder.Services.Configure<AppSettings>(
     builder.Configuration.GetSection("AppSettings"));
@@ -23,15 +37,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             "DefaultConnection"));
 });
 
-builder.Host.UseSerilog((context, services, configuration) => configuration
-    .ReadFrom.Configuration(context.Configuration)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File("logs/lab05-.txt", rollingInterval: RollingInterval.Day));
-
-builder.Services.AddHealthChecks()
-    .AddCheck("self", () => HealthCheckResult.Healthy("Application is running."), tags: new[] { "live" })
-    .AddDbContextCheck<AppDbContext>("database", tags: new[] { "ready" });
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Extensions["traceId"] =
+            context.HttpContext.TraceIdentifier;
+        context.ProblemDetails.Extensions["timestamp"] =
+            DateTimeOffset.UtcNow;
+    };
+});
 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
@@ -40,21 +55,81 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy("Application is running."), tags: new[] { "live" })
+    .AddDbContextCheck<AppDbContext>("database", tags: new[] { "ready" });
+
+
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/Home/StatusCode", "?code={0}");
+
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
-    Predicate = check => check.Tags.Contains("live")
+    Predicate = r => r.Tags.Contains("live"),
+
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var result = new
+        {
+            status = report.Status.ToString(),
+            totalDuration = report.TotalDuration.TotalMilliseconds,
+            checks = report.Entries.Select(x => new
+            {
+                name = x.Key,
+                status = x.Value.Status.ToString(),
+                duration = x.Value.Duration.TotalMilliseconds,
+                description = x.Value.Description
+            })
+        };
+
+        await context.Response.WriteAsJsonAsync(result);
+    }
 });
+
 app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
-    Predicate = check => check.Tags.Contains("ready")
+    Predicate = r => r.Tags.Contains("ready"),
+
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var result = new
+        {
+            status = report.Status.ToString(),
+            totalDuration = report.TotalDuration.TotalMilliseconds,
+            checks = report.Entries.Select(x => new
+            {
+                name = x.Key,
+                status = x.Value.Status.ToString(),
+                duration = x.Value.Duration.TotalMilliseconds,
+                description = x.Value.Description
+            })
+        };
+
+        await context.Response.WriteAsJsonAsync(result);
+    }
 });
 
 app.MapGet("/api/books/{id:int}", async (int id, AppDbContext db, HttpContext http) =>
@@ -72,14 +147,6 @@ app.MapGet("/api/books/{id:int}", async (int id, AppDbContext db, HttpContext ht
 
     return Results.Ok(product);
 });
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

@@ -22,28 +22,44 @@ public class AuditLogRepository : IAuditLogRepository
     }
 
     public async Task<List<AuditLog>> FilterAsync(
-    string? entityName,
-    string? action,
-    DateTime? fromDate,
-    DateTime? toDate)
+        string? entityName,
+        string? action,
+        DateTime? fromDate,
+        DateTime? toDate)
     {
-        var query = _context.AuditLogs.AsQueryable();
+        var query = _context.AuditLogs
+            .AsNoTracking()
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(entityName))
-            query = query.Where(x => x.EntityName.Contains(entityName));
+        {
+            entityName = entityName.Trim().ToLower();
 
-        if (!string.IsNullOrWhiteSpace(action))
-            query = query.Where(x => x.Action == action);
+            query = query.Where(x =>
+                x.EntityName != null &&
+                x.EntityName.ToLower().Contains(entityName));
+        }
 
+        // if (!string.IsNullOrWhiteSpace(action))
+        // {
+        //     query = query.Where(x =>
+        //         x.Action != null &&
+        //         x.Action.ToUpper() == action.ToUpper());
+        // }
         if (fromDate.HasValue)
-            query = query.Where(x => x.CreatedAt >= fromDate);
-
+        {
+            Console.WriteLine($"fromDate: {fromDate}");
+            var from = fromDate.Value.Date;
+            query = query.Where(x => x.CreatedAt >= from);
+        }
         if (toDate.HasValue)
-            query = query.Where(x => x.CreatedAt <= toDate);
-
+        {
+            Console.WriteLine($"toDate: {toDate}");
+            var to = toDate.Value.Date.AddDays(1).AddTicks(-1);
+            query = query.Where(x => x.CreatedAt <= to);
+        }
         return await query
             .OrderByDescending(x => x.CreatedAt)
-            .AsNoTracking()
             .ToListAsync();
     }
 }
