@@ -21,5 +21,11 @@ public interface IBookService
         int? categoryId,
         decimal? minPrice,
         decimal? maxPrice);
+
+    Task DeleteAsync(int id);
+
+    Task<List<BookListItemViewModel>> GetDeletedAsync();
+
+    Task RestoreAsync(int id);
 }
 

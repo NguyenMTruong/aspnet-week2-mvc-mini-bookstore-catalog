@@ -163,5 +163,31 @@ public class BookService : IBookService
             })
             .ToList();
     }
+
+    public async Task DeleteAsync(int id)
+    {
+        await _repository.DeleteAsync(id);
+        await _repository.SaveChangesAsync();
+    }
+
+    public async Task RestoreAsync(int id)
+    {
+        await _repository.RestoreAsync(id);
+
+        await _repository.SaveChangesAsync();
+    }
+
+    public async Task<List<BookListItemViewModel>>
+    GetDeletedAsync()
+    {
+        var books =
+            await _repository.GetDeletedAsync();
+
+        return books
+            .Select(ToListItem)
+            .ToList();
+    }
+
+
 }
 

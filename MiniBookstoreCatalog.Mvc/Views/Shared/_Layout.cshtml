@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +8,7 @@
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
+
 <body>
     <header class="site-header">
         <div class="container header-content">
@@ -27,6 +29,14 @@
     </header>
 
     <main class="container main-content">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+
+                @TempData["Success"]
+
+            </div>
+        }
         @RenderBody()
     </main>
 
@@ -39,4 +49,5 @@
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

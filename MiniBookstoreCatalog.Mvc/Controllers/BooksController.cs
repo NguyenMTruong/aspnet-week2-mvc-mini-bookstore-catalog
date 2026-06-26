@@ -90,6 +90,30 @@ public class BooksController : Controller
         return View(result);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _bookService.DeleteAsync(id);
+
+        TempData["Success"] =
+            "Xóa sách thành công.";
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Restore(int id)
+    {
+        await _bookService.RestoreAsync(id);
+
+        TempData["Success"] =
+            "Khôi phục thành công.";
+
+        return RedirectToAction(nameof(Trash));
+    }
+
     public async Task<IActionResult> LowStock()
     {
         var books =
@@ -110,6 +134,14 @@ public class BooksController : Controller
                 maxPrice);
 
         return View(result);
+    }
+
+    public async Task<IActionResult> Trash()
+    {
+        var books =
+            await _bookService.GetDeletedAsync();
+
+        return View(books);
     }
 }
 

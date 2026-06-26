@@ -6,17 +6,19 @@
 
 <h2>Book Catalog</h2>
 
-<p>
-    <a asp-action="Create"
-       class="btn btn-primary">
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-primary">
         Add New Book
     </a>
 
-    <a asp-action="Stats"
-       class="btn btn-success">
+    <a asp-action="Trash" class="btn btn-secondary">
+        Trash
+    </a>
+
+    <a asp-action="Stats" class="btn btn-success">
         Inventory Stats
     </a>
-</p>
+</div>
 
 <table class="table table-bordered">
     <thead>
@@ -33,24 +35,32 @@
     </thead>
 
     <tbody>
-    @foreach (BookListItemViewModel item in Model)
-    {
-        <tr>
-            <td>@item.ISBN</td>
-            <td>@item.BookCode</td>
-            <td>@item.Title</td>
-            <td>@item.Author</td>
-            <td>@item.CategoryName</td>
-            <td>@item.Price.ToString("N0") VNĐ</td>
-            <td>@item.Stock</td>
-            <td>
-                <a asp-action="Detail"
-                   asp-route-id="@item.Id">
-                    Detail
-                </a>
-            </td>
-        </tr>
-    }
+        @foreach (BookListItemViewModel item in Model)
+        {
+            <tr>
+                <td>@item.ISBN</td>
+                <td>@item.BookCode</td>
+                <td>@item.Title</td>
+                <td>@item.Author</td>
+                <td>@item.CategoryName</td>
+                <td>@item.Price.ToString("N0") VNĐ</td>
+                <td>@item.Stock</td>
+                <td>
+                    <a asp-action="Detail" asp-route-id="@item.Id">
+                        Detail
+                    </a>
+                </td>
+                <td>
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this book?')">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 

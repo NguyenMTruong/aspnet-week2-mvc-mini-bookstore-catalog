@@ -1,0 +1,70 @@
+@model IEnumerable<MiniBookstoreCatalog.Mvc.ViewModels.BookListItemViewModel>
+
+@{
+    ViewData["Title"] = "Trash";
+}
+
+<h2>Deleted Books</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Không có sách nào trong thùng rác.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ISBN</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Price</th>
+                <th>Restore</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        @foreach(var item in Model)
+        {
+            <tr>
+
+                <td>@item.ISBN</td>
+
+                <td>@item.Title</td>
+
+                <td>@item.Author</td>
+
+                <td>@item.Price.ToString("N0")</td>
+
+                <td>
+
+                    <form asp-action="Restore"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="id"
+                               value="@item.Id" />
+
+                        <button
+                            class="btn btn-success btn-sm">
+
+                            Restore
+
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+        }
+
+        </tbody>
+
+    </table>
+}

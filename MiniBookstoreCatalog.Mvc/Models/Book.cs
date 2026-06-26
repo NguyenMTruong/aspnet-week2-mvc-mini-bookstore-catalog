@@ -1,11 +1,10 @@
 namespace MiniBookstoreCatalog.Mvc.Models;
 
 using System.ComponentModel.DataAnnotations;
+using MiniBookstoreCatalog.Mvc.Models.Base;
 
-public class Book
+public class Book : BaseEntity
 {
-    public int Id { get; set; }
-
     public string ISBN { get; set; } = string.Empty;
 
     [Required]

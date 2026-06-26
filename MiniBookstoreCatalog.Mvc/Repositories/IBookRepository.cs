@@ -19,10 +19,14 @@ public interface IBookRepository
     Task DeleteAsync(int id);
 
     Task SaveChangesAsync();
-    
+
     Task<List<Book>> FilterAsync(
     int? categoryId,
     decimal? minPrice,
     decimal? maxPrice);
+
+    Task<List<Book>> GetDeletedAsync();
+
+    Task RestoreAsync(int id);
 }
 

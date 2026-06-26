@@ -17,6 +17,7 @@ public class BookRepository : IBookRepository
     {
         return await _context.Books
             .Include(x => x.Category)
+            .Where(x => !x.IsDeleted)
             .ToListAsync();
     }
 
@@ -24,6 +25,7 @@ public class BookRepository : IBookRepository
     {
         return await _context.Books
             .Include(x => x.Category)
+            .Where(x => !x.IsDeleted)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -32,7 +34,9 @@ public class BookRepository : IBookRepository
     {
         return await _context.Books
             .Include(x => x.Category)
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x =>
+                x.Id == id &&
+                !x.IsDeleted);
     }
 
     public async Task<List<Book>> SearchAsync(string keyword)
@@ -41,10 +45,10 @@ public class BookRepository : IBookRepository
 
         return await _context.Books
             .Include(x => x.Category)
-            .Where(x =>
+            .Where(x => !x.IsDeleted && (
                 x.Title.ToLower().Contains(keyword)
                 || x.Author.ToLower().Contains(keyword)
-                || x.ISBN.ToLower().Contains(keyword))
+                || x.ISBN.ToLower().Contains(keyword)))
             .ToListAsync();
     }
 
@@ -66,7 +70,8 @@ public class BookRepository : IBookRepository
 
         if (book != null)
         {
-            _context.Books.Remove(book);
+            book.IsDeleted = true;
+            book.DeletedAt = DateTime.UtcNow;
         }
     }
 
@@ -82,6 +87,7 @@ public class BookRepository : IBookRepository
     {
         var query = _context.Books
             .Include(x => x.Category)
+            .Where(x => !x.IsDeleted)
             .AsNoTracking()
             .AsQueryable();
 
@@ -98,6 +104,26 @@ public class BookRepository : IBookRepository
                 x.Price <= maxPrice);
 
         return await query.ToListAsync();
+    }
+
+    public async Task<List<Book>> GetDeletedAsync()
+    {
+        return await _context.Books
+            .Include(x => x.Category)
+            .Where(x => x.IsDeleted)
+            .ToListAsync();
+    }
+
+    public async Task RestoreAsync(int id)
+    {
+        var book = await _context.Books
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (book == null)
+            return;
+
+        book.IsDeleted = false;
+        book.DeletedAt = null;
     }
 }
 
