@@ -34,5 +34,9 @@ public interface IBookService
     Task<BookEditViewModel?> GetForEditAsync(int id);
 
     Task UpdateAsync(BookEditViewModel model);
+
+    Task<AdjustStockViewModel?> GetAdjustStockAsync(int id);
+
+    Task<bool> AdjustStockAsync(AdjustStockViewModel model);
 }
 

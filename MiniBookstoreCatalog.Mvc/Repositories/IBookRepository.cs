@@ -31,5 +31,9 @@ public interface IBookRepository
     Task<List<Book>> GetDeletedAsync();
 
     Task RestoreAsync(int id);
+
+    Task<bool> UpdateStockAsync(
+    Book book,
+    byte[] rowVersion);
 }
 

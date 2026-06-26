@@ -39,6 +39,34 @@ public class BookRepository : IBookRepository
                 !x.IsDeleted);
     }
 
+    public async Task<bool> UpdateStockAsync(
+    Book book,
+    byte[] rowVersion)
+    {
+
+
+        _context.Entry(book)
+        .Property(x => x.RowVersion)
+        .OriginalValue = rowVersion;
+
+
+        try
+        {
+
+            await _context.SaveChangesAsync();
+
+            return true;
+
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+
+            return false;
+
+        }
+
+    }
+
     public async Task<List<Book>> SearchAsync(
     string keyword,
     decimal? minPrice,

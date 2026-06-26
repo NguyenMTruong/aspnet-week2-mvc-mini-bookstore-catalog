@@ -58,6 +58,24 @@ public class BooksController : Controller
             new BookCreateViewModel());
     }
 
+    public async Task<IActionResult> AdjustStock(int id)
+    {
+
+        var model =
+        await _bookService
+        .GetAdjustStockAsync(id);
+
+
+
+        if (model == null)
+            return NotFound();
+
+
+
+        return View(model);
+
+    }
+
     [HttpGet]
     public async Task<IActionResult> Search(
     string keyword,
@@ -88,7 +106,7 @@ public class BooksController : Controller
 
         return View(model);
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
@@ -120,6 +138,35 @@ public class BooksController : Controller
             nameof(Index));
     }
 
+    [HttpPost]
+    public async Task<IActionResult> AdjustStock(
+    AdjustStockViewModel model)
+    {
+
+
+        var result =
+        await _bookService
+        .AdjustStockAsync(model);
+
+
+
+        if (!result)
+        {
+
+            ModelState.AddModelError(
+            "",
+            "Stock không hợp lệ hoặc dữ liệu đã thay đổi");
+
+
+            return View(model);
+
+        }
+
+
+
+        return RedirectToAction("Index");
+
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]

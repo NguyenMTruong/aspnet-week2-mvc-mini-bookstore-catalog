@@ -10,13 +10,16 @@ public class BookService : IBookService
 {
     private readonly IBookRepository _repository;
     private readonly AppSettings _settings;
+    private readonly ILogger<BookService> _logger;
 
     public BookService(
         IBookRepository repository,
-        IOptions<AppSettings> options)
+        IOptions<AppSettings> options,
+        ILogger<BookService> logger)
     {
         _repository = repository;
         _settings = options.Value;
+        _logger = logger;
     }
 
     public async Task<List<BookListItemViewModel>> GetAllAsync()
@@ -236,6 +239,77 @@ public class BookService : IBookService
         await _repository.UpdateAsync(book, model.RowVersion);
 
         await _repository.SaveChangesAsync();
+    }
+
+    public async Task<AdjustStockViewModel?> GetAdjustStockAsync(int id)
+    {
+
+        var book =
+        await _repository.GetByIdAsync(id);
+
+
+
+        if (book == null)
+            return null;
+
+
+
+        return new AdjustStockViewModel
+        {
+
+            Id = book.Id,
+
+            RowVersion = book.RowVersion
+
+        };
+
+    }
+
+    public async Task<bool> AdjustStockAsync(
+AdjustStockViewModel model)
+    {
+
+
+        var book =
+        await _repository.GetByIdAsync(model.Id);
+
+
+
+        if (book == null)
+            return false;
+
+
+
+        var newStock =
+        book.Stock + model.ChangeAmount;
+
+
+
+        if (newStock < 0)
+            return false;
+
+
+
+        book.Stock = newStock;
+
+
+        book.LastUpdatedAt =
+        DateTime.Now;
+
+
+
+        _logger.LogInformation(
+        "Adjust stock BookId={id} Stock={stock}",
+        book.Id,
+        book.Stock);
+
+
+
+        return await _repository
+        .UpdateStockAsync(
+        book,
+        model.RowVersion);
+
     }
 }
 
