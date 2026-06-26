@@ -1,2 +1,9 @@
 2026-06-27 00:01:47.358 +07:00 [WRN] Failed to determine the https port for redirect.
 2026-06-27 00:07:13.592 +07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-27 00:38:30.017 +07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-27 00:38:53.608 +07:00 [INF] Loading book list
+2026-06-27 00:40:34.687 +07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-27 00:40:36.881 +07:00 [INF] Loading book list
+2026-06-27 00:42:51.894 +07:00 [INF] Loading book list
+2026-06-27 00:42:54.573 +07:00 [INF] Loading book list
+2026-06-27 00:43:05.130 +07:00 [INF] Loading book list

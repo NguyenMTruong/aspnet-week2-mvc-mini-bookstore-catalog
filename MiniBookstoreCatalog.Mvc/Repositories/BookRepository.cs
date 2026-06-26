@@ -33,12 +33,10 @@ public class BookRepository : IBookRepository
     public async Task<Book?> GetByIdAsync(int id)
     {
         return await _context.Books
-            .Include(x => x.Category)
             .FirstOrDefaultAsync(x =>
                 x.Id == id &&
                 !x.IsDeleted);
     }
-
     public async Task<bool> UpdateStockAsync(
     Book book,
     byte[] rowVersion)
@@ -117,12 +115,25 @@ public class BookRepository : IBookRepository
         await _context.Books.AddAsync(book);
     }
 
-    public Task UpdateAsync(Book book, byte[] rowVersion)
+    public Task UpdateAsync(
+        Book book,
+        byte[] rowVersion)
     {
-        _context.Entry(book)
-            .Property(x => x.RowVersion)
+
+        var entry =
+            _context.Entry(book);
+
+
+        entry.State =
+            EntityState.Modified;
+
+
+
+        entry.Property(x => x.RowVersion)
             .OriginalValue = rowVersion;
-        _context.Books.Update(book);
+
+
+
         return Task.CompletedTask;
     }
 

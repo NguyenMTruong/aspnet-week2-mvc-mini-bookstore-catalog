@@ -244,28 +244,42 @@ public class BooksController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(BookEditViewModel model)
+    public async Task<IActionResult> Edit(
+    BookEditViewModel model)
     {
+
         if (!ModelState.IsValid)
             return View(model);
 
+
+
         try
         {
-            await _bookService.UpdateAsync(model);
+
+            await _bookService
+                .UpdateAsync(model);
+
+
 
             TempData["Success"] =
                 "Cập nhật thành công.";
 
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(
+                nameof(Index));
+
         }
         catch (DbUpdateConcurrencyException)
         {
+
             ModelState.AddModelError(
                 "",
-                "Dữ liệu đã được người khác thay đổi. Vui lòng tải lại trang.");
+                "Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại.");
+
 
             return View(model);
         }
+
     }
 
     // METHOD

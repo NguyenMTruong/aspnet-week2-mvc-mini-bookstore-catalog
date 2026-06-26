@@ -217,28 +217,69 @@ public class BookService : IBookService
         };
     }
 
-    public async Task UpdateAsync(BookEditViewModel model)
+    public async Task UpdateAsync(
+    BookEditViewModel model)
     {
-        var book = await _repository.GetByIdAsync(model.Id);
+
+        var book =
+            await _repository
+                .GetByIdAsync(model.Id);
+
+
 
         if (book == null)
-            throw new Exception("Book not found.");
+            throw new Exception(
+                "BOOK_NOT_FOUND");
 
-        book.ISBN = model.ISBN;
-        book.BookCode = model.BookCode;
-        book.Title = model.Title;
-        book.Author = model.Author;
-        book.Price = model.Price;
-        book.Stock = model.Stock;
-        book.MinStock = model.MinStock;
-        book.CategoryId = model.CategoryId;
 
-        // Tạm thời vẫn giữ để không ảnh hưởng các View hiện có
-        book.LastUpdatedAt = DateTime.UtcNow;
 
-        await _repository.UpdateAsync(book, model.RowVersion);
+        book.ISBN =
+            model.ISBN;
 
-        await _repository.SaveChangesAsync();
+
+        book.BookCode =
+            model.BookCode;
+
+
+        book.Title =
+            model.Title;
+
+
+        book.Author =
+            model.Author;
+
+
+        book.Price =
+            model.Price;
+
+
+        book.Stock =
+            model.Stock;
+
+
+        book.MinStock =
+            model.MinStock;
+
+
+        book.CategoryId =
+            model.CategoryId;
+
+
+
+        book.LastUpdatedAt =
+            DateTime.UtcNow;
+
+
+
+        await _repository
+            .UpdateAsync(
+                book,
+                model.RowVersion);
+
+
+
+        await _repository
+            .SaveChangesAsync();
     }
 
     public async Task<AdjustStockViewModel?> GetAdjustStockAsync(int id)

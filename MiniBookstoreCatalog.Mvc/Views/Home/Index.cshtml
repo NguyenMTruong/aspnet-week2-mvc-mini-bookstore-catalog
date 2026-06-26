@@ -1,39 +1,297 @@
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="lab-hero">
-    <h1>Mini Bookstore Catalog MVC</h1>
 
-    <p>
-        Website này giúp quản lý danh mục sách
-        <br />
-        và theo dõi tình trạng tồn kho của cửa hàng sách.
-    </p>
-</div>
+<div class="container mt-4">
 
-<div class="info-panel">
-    <h4>Mục tiêu chính của hệ thống</h4>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <p>
-        Ứng dụng sử dụng ASP.NET Core MVC để quản lý sách,
-        hiển thị danh sách, chi tiết và thống kê tồn kho.
-    </p>
-</div>
+        <div>
+            <h1 class="fw-bold">
+                📚 Mini Bookstore Dashboard
+            </h1>
 
-<h3>Chức năng chính của hệ thống</h3>
+            <p class="text-muted">
+                System overview and management center
+            </p>
+        </div>
 
-<ol class="flow-list">
-    <li>1. Xem danh sách tất cả sách trong cửa hàng.</li>
-    <li>2. Xem chi tiết từng quyển sách.</li>
-    <li>3. Kiểm tra trạng thái tồn kho của sách.</li>
-    <li>4. Xem thống kê tổng quan kho sách.</li>
-    <li>5. Hỗ trợ JSON response và xử lý NotFound.</li>
-</ol>
 
-<div class="text-center mt-4">
-    <a class="btn btn-primary btn-lg" href="/Books">
-        <i class="bi bi-book"></i>
-        Đi đến Book Catalog
-    </a>
+        <div>
+            <a asp-controller="Books"
+               asp-action="Create"
+               class="btn btn-primary">
+                + Add Book
+            </a>
+        </div>
+
+    </div>
+
+
+
+
+
+    <!-- Statistic cards -->
+
+    <div class="row g-4">
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Books
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        --
+                    </h2>
+
+                    <a asp-controller="Books"
+                       asp-action="Index">
+                        View books →
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Low Stock
+                    </h6>
+
+                    <h2 class="fw-bold text-danger">
+                        --
+                    </h2>
+
+                    <span>
+                        Need attention
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Orders
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        --
+                    </h2>
+
+                    <a asp-controller="Orders"
+                       asp-action="Index">
+                        Manage orders →
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        System Status
+                    </h6>
+
+
+                    <h2 class="fw-bold text-success">
+                        Healthy
+                    </h2>
+
+
+                    <a href="/health/ready">
+                        Check health →
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- Quick actions -->
+
+    <div class="card mt-5 shadow-sm">
+
+
+        <div class="card-header fw-bold">
+
+            Quick Actions
+
+        </div>
+
+
+
+        <div class="card-body">
+
+
+            <div class="row">
+
+
+                <div class="col-md-4">
+
+                    <a asp-controller="Books"
+                       asp-action="Search"
+                       class="btn btn-outline-primary w-100">
+
+                        🔎 Search Books
+
+                    </a>
+
+                </div>
+
+
+
+                <div class="col-md-4">
+
+                    <a href="/health/ready"
+                       class="btn btn-outline-success w-100">
+
+                        ❤️ Health Check
+
+                    </a>
+
+                </div>
+
+
+
+                <div class="col-md-4">
+
+                    <a asp-controller="AuditLogs"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary w-100">
+
+                        📋 Audit Logs
+
+                    </a>
+
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- Feature checklist -->
+
+
+    <div class="card mt-4">
+
+
+        <div class="card-header fw-bold">
+
+            Lab 05 Features
+
+        </div>
+
+
+        <ul class="list-group list-group-flush">
+
+
+            <li class="list-group-item">
+
+                ✅ Search and filter active data
+
+            </li>
+
+
+            <li class="list-group-item">
+
+                ✅ Soft delete support
+
+            </li>
+
+
+            <li class="list-group-item">
+
+                ✅ RowVersion concurrency control
+
+            </li>
+
+
+            <li class="list-group-item">
+
+                ✅ Structured logging
+
+            </li>
+
+
+            <li class="list-group-item">
+
+                ✅ Health Check + ProblemDetails
+
+            </li>
+
+
+        </ul>
+
+
+    </div>
+
+
 </div>
